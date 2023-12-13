@@ -284,11 +284,27 @@ namespace Testing_students.Forms.TestForms
         {
             try
             {
+                DataTable dt = Connector.ExecuteSelectQuery(
+                    @"SELECT MAX(question_id) FROM question;"
+                );
+
+                int index = 0;
+                if (dt.Rows.Count > 0)
+                {
+                    try
+                    {
+                        index = dt.Rows[0].Field<int>(0) + 1;
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+
                 // Додання нового питання
                 Connector.ExecuteQuery(
-                    @"INSERT INTO question (question_id, test_id, question_type_id, question_content, answer_point)
-                SELECT (SELECT MAX(question_id) + 1 FROM question),"
-                    + testId.ToString() + ", 0, '', 0"
+                   $@"INSERT INTO question(question_id, test_id, question_type_id, question_content, answer_point)
+                      VALUES({index}, {testId}, 0, '', 0);"
                 );
 
                 DataTable maxId = Connector.ExecuteSelectQuery(
